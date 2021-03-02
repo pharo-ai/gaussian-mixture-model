@@ -1,4 +1,4 @@
-# Expectation-Maximization (EM) Algorithm
+# Gaussian Mixture Model
 
 ![Build status](https://github.com/pharo-ai/gaussian-mixture-model/workflows/CI/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/pharo-ai/gaussian-mixture-model/badge.svg?branch=master)](https://coveralls.io/github/pharo-ai/gaussian-mixture-model?branch=master)
