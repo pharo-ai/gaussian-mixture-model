@@ -58,8 +58,23 @@ AIGaussianMixtureModel >> fit: aCollectionOfCollections [
 		self calculateLogLikelihoodFor: aCollectionOfCollections ].
 ]
 
+{ #category : #accessing }
+AIGaussianMixtureModel >> gaussians [
+
+	^ gaussians
+]
+
+{ #category : #accessing }
+AIGaussianMixtureModel >> gaussians: anObject [
+
+	gaussians := anObject
+]
+
 { #category : #convergence }
 AIGaussianMixtureModel >> hasConverged [
+	logLikelihoodHistory size < 2
+		ifTrue: [ ^ false ].
+	
 	logLikelihoodHistory size >= 100 ifTrue: [
 		self inform: 'Maximum number of iterations was reached'.
 		^ true ].
@@ -101,12 +116,42 @@ AIGaussianMixtureModel >> initializeParametersFor: aCollectionOfCollections [
 		numberOfGaussians: numberOfGaussians.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #classification }
+AIGaussianMixtureModel >> labels [
+	^ responsibilities collect: [ :each |
+		each indexOf: each max ]
+]
+
+{ #category : #accessing }
 AIGaussianMixtureModel >> logLikelihood [
 	"Answer the current value of log-likelihood. It should be the last value in the history"
 	^ logLikelihoodHistory
 		ifEmpty: [ nil ]
 		ifNotEmpty: [ logLikelihoodHistory last ]
+]
+
+{ #category : #accessing }
+AIGaussianMixtureModel >> logLikelihoodHistory [
+
+	^ logLikelihoodHistory
+]
+
+{ #category : #accessing }
+AIGaussianMixtureModel >> logLikelihoodHistory: anObject [
+
+	logLikelihoodHistory := anObject
+]
+
+{ #category : #accessing }
+AIGaussianMixtureModel >> mixingCoefficients [
+
+	^ mixingCoefficients
+]
+
+{ #category : #accessing }
+AIGaussianMixtureModel >> mixingCoefficients: anObject [
+
+	mixingCoefficients := anObject
 ]
 
 { #category : #accessing }
@@ -119,18 +164,30 @@ AIGaussianMixtureModel >> numberOfGaussians: aNumber [
 	numberOfGaussians := aNumber
 ]
 
+{ #category : #accessing }
+AIGaussianMixtureModel >> responsibilities [
+
+	^ responsibilities
+]
+
+{ #category : #accessing }
+AIGaussianMixtureModel >> responsibilities: anObject [
+
+	responsibilities := anObject
+]
+
 { #category : #fitting }
 AIGaussianMixtureModel >> updateParametersFor: aCollectionOfCollections [
 	| n mu deviation sigma |
 	
 	1 to: numberOfGaussians do: [ :k | 
 		n := (responsibilities collect: [ :each | each at: k ]) sum.
-		mu := 1 / n * ((1 to: aCollectionOfCollections size) collect: [ :i |
-			(responsibilities at: i) * (aCollectionOfCollections at: i) ]) sum.
+		mu := (1 / n * ((1 to: aCollectionOfCollections size) collect: [ :i |
+			((responsibilities at: i) at: k) * (aCollectionOfCollections at: i) ]) sum) asPMVector.
 		
 		sigma := 1 / n * ((1 to: aCollectionOfCollections size) collect: [ :i |
 			deviation := (aCollectionOfCollections at: i) - mu.
-			(responsibilities at: i) * (deviation tensorProduct: deviation) ]) sum.
+			((responsibilities at: i) at: k) * (deviation tensorProduct: deviation) ]) sum.
 		
 		(gaussians at: k) initializeMeanVector: mu covarianceMatrix: sigma.
 		
