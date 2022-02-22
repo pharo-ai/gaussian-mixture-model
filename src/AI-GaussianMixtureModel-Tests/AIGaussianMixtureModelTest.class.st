@@ -17,3 +17,10 @@ AIGaussianMixtureModelTest >> setUp [
 	model := AIGaussianMixtureModel new.
 	data := #( #( 0 0.25 ) #( 0.5 0 ) #( 0.5 1 ) #( 1 1 ) )
 ]
+
+{ #category : #test }
+AIGaussianMixtureModelTest >> testFit [
+
+	
+	model fit:data
+]
