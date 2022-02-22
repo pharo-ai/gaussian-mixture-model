@@ -12,7 +12,7 @@ Class {
 	#category : #'AI-GaussianMixtureModel'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #'class initialization' }
 AIGaussianMixtureModel class >> defaultNumberOfGaussians [
 	^ 2
 ]
