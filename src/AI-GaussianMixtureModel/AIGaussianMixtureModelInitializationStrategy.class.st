@@ -6,12 +6,14 @@ Class {
 
 { #category : #initialization }
 AIGaussianMixtureModelInitializationStrategy >> initializeCovarianceMatricesFor: aCollectionOfCollections numberOfGaussians: aNumber [
+
 	"TODO: Find a better way to initialize covariance matrices"
+
 	| power |
 	power := aCollectionOfCollections anyOne size.
-	
+
 	^ (1 to: aNumber) collect: [ :k |
-		PMSymmetricMatrix identity: power ]
+		  PMSymmetricMatrix identity: power ]
 ]
 
 { #category : #initialization }
