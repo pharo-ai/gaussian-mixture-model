@@ -17,6 +17,14 @@ AIGaussianMixtureModel class >> defaultNumberOfGaussians [
 	^ 2
 ]
 
+{ #category : #accessing }
+AIGaussianMixtureModel class >> numberOfGaussians: aNumber [
+
+	^ self new
+		numberOfGaussians: aNumber;
+		yourself
+]
+
 { #category : #convergence }
 AIGaussianMixtureModel >> calculateLogLikelihoodFor: aCollectionOfVectors [
 	| logLikelihood |
