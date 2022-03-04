@@ -18,10 +18,10 @@ AIGaussianMixtureModel class >> defaultNumberOfGaussians [
 ]
 
 { #category : #convergence }
-AIGaussianMixtureModel >> calculateLogLikelihoodFor: aCollectionOfCollections [
+AIGaussianMixtureModel >> calculateLogLikelihoodFor: aCollectionOfVectors [
 	| logLikelihood |
 	
-	logLikelihood := (aCollectionOfCollections collect: [ :each | 
+	logLikelihood := (aCollectionOfVectors collect: [ :each | 
 		((1 to: numberOfGaussians) collect: [ :k |
 			(mixingCoefficients at: k) * ((gaussians at: k) value: each) ]) sum log ]) sum.
 	
@@ -29,10 +29,10 @@ AIGaussianMixtureModel >> calculateLogLikelihoodFor: aCollectionOfCollections [
 ]
 
 { #category : #fitting }
-AIGaussianMixtureModel >> evaluateResponsibilitiesFor: aCollectionOfCollections [
+AIGaussianMixtureModel >> evaluateResponsibilitiesFor: aCollectionOfVectors [
 	| numerator denominator |
 
-	responsibilities := aCollectionOfCollections collect: [ :each |
+	responsibilities := aCollectionOfVectors collect: [ :each |
 		(1 to: numberOfGaussians) collect: [ :k |
 			numerator := (mixingCoefficients at: k) * ((gaussians at: k) value: each).
 			denominator := ((1 to: numberOfGaussians) collect: [ :j |
@@ -45,17 +45,22 @@ AIGaussianMixtureModel >> evaluateResponsibilitiesFor: aCollectionOfCollections 
 AIGaussianMixtureModel >> fit: aCollectionOfCollections [
 	"Fits the given number of multivariate norml distributions (defined by the numberOfGaussians) to the data which can be a collection of collections or a DataFrame"
 	
-	self initializeParametersFor: aCollectionOfCollections.
+	| collectionOfVectors |
+	
+	collectionOfVectors := OrderedCollection withAll: (aCollectionOfCollections
+		collect: [ :each | each asPMVector ]).
+	
+	self initializeParametersFor: collectionOfVectors.
 	
 	[ self hasConverged ] whileFalse: [
 		"Expectation (E step)"
-		self evaluateResponsibilitiesFor: aCollectionOfCollections.
+		self evaluateResponsibilitiesFor: collectionOfVectors.
 		
 		"Maximization (M step)"
-		self updateParametersFor: aCollectionOfCollections.
+		self updateParametersFor: collectionOfVectors.
 		
 		"Evaluation"
-		self calculateLogLikelihoodFor: aCollectionOfCollections ].
+		self calculateLogLikelihoodFor: collectionOfVectors ].
 ]
 
 { #category : #accessing }
@@ -106,13 +111,13 @@ AIGaussianMixtureModel >> initialize [
 ]
 
 { #category : #accessing }
-AIGaussianMixtureModel >> initializeParametersFor: aCollectionOfCollections [
+AIGaussianMixtureModel >> initializeParametersFor: aCollectionOfVectors [
 	gaussians := initializationStrategy
-		initializeGaussiansFor: aCollectionOfCollections
+		initializeGaussiansFor: aCollectionOfVectors
 		numberOfGaussians: numberOfGaussians.
 		
 	mixingCoefficients := initializationStrategy
-		initializeMixingCoefficientsFor: aCollectionOfCollections
+		initializeMixingCoefficientsFor: aCollectionOfVectors
 		numberOfGaussians: numberOfGaussians.
 ]
 
@@ -177,21 +182,21 @@ AIGaussianMixtureModel >> responsibilities: anObject [
 ]
 
 { #category : #fitting }
-AIGaussianMixtureModel >> updateParametersFor: aCollectionOfCollections [
+AIGaussianMixtureModel >> updateParametersFor: aCollectionOfVectors [
 	| n mu deviation sigma |
 	
 	1 to: numberOfGaussians do: [ :k | 
 		n := (responsibilities collect: [ :each | each at: k ]) sum.
-		mu := (1 / n * ((1 to: aCollectionOfCollections size) collect: [ :i |
-			((responsibilities at: i) at: k) * (aCollectionOfCollections at: i) ]) sum) asPMVector.
+		mu := (1 / n * ((1 to: aCollectionOfVectors size) collect: [ :i |
+			((responsibilities at: i) at: k) * (aCollectionOfVectors at: i) ]) sum).
 		
-		sigma := 1 / n * ((1 to: aCollectionOfCollections size) collect: [ :i |
-			deviation := (aCollectionOfCollections at: i) - mu.
+		sigma := 1 / n * ((1 to: aCollectionOfVectors size) collect: [ :i |
+			deviation := (aCollectionOfVectors at: i) - mu.
 			((responsibilities at: i) at: k) * (deviation tensorProduct: deviation) ]) sum.
 		
 		(gaussians at: k) initializeMeanVector: mu covarianceMatrix: sigma.
 		
-		mixingCoefficients at: k put: (n / aCollectionOfCollections size) ]
+		mixingCoefficients at: k put: (n / aCollectionOfVectors size) ]
 ]
 
 { #category : #'initialization strategy' }
