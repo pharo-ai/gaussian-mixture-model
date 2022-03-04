@@ -170,6 +170,18 @@ AIGaussianMixtureModel >> numberOfGaussians: aNumber [
 ]
 
 { #category : #accessing }
+AIGaussianMixtureModel >> randomSeed [
+
+	^ initializationStrategy randomSeed
+]
+
+{ #category : #accessing }
+AIGaussianMixtureModel >> randomSeed: aNumber [
+
+	initializationStrategy randomSeed: aNumber
+]
+
+{ #category : #accessing }
 AIGaussianMixtureModel >> responsibilities [
 
 	^ responsibilities

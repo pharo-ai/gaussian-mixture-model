@@ -15,12 +15,12 @@ AIGaussianMixtureModelTest >> setUp [
 
 	"Put here a common initialization logic for tests"
 	model := AIGaussianMixtureModel new.
+	model randomSeed: 3.
 	data := #( #( 0 0.25 ) #( 0.5 0 ) #( 0.5 1 ) #( 1 1 ) )
 ]
 
 { #category : #test }
 AIGaussianMixtureModelTest >> testFit [
 
-	
-	model fit:data
+	model fit: data.
 ]

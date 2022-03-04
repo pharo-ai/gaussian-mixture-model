@@ -1,6 +1,9 @@
 Class {
 	#name : #AIGaussianMixtureModelInitializationStrategy,
 	#superclass : #Object,
+	#instVars : [
+		'randomSeed'
+	],
 	#category : #'AI-GaussianMixtureModel'
 }
 
@@ -37,4 +40,16 @@ AIGaussianMixtureModelInitializationStrategy >> initializeMeanVectorsFor: aColle
 { #category : #initialization }
 AIGaussianMixtureModelInitializationStrategy >> initializeMixingCoefficientsFor: aCollectionOfCollections numberOfGaussians: aNumber [
 	^ (1 to: aNumber) collect: [ :k | 1 / aNumber ]
+]
+
+{ #category : #accessing }
+AIGaussianMixtureModelInitializationStrategy >> randomSeed [
+
+	^ randomSeed
+]
+
+{ #category : #accessing }
+AIGaussianMixtureModelInitializationStrategy >> randomSeed: anObject [
+
+	randomSeed := anObject
 ]

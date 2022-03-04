@@ -14,6 +14,7 @@ AIGaussianMixtureModelRandomInitializationStrategy >> initializeMeanVectorsFor: 
 		aCollectionOfCollections collect: [ :each | each at: j ] ].
 	
 	random := Random new.
+	randomSeed ifNotNil: [ random seed: randomSeed ].
 	
 	^ (1 to: aNumber) collect: [ :k |
 		PMVector withAll: ((1 to: power) collect: [ :j |
