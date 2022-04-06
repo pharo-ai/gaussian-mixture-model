@@ -11,7 +11,7 @@ BaselineOfAIGaussianMixtureModel >> baseline: spec [
 		"External dependencies"
 		spec
 			baseline: 'PolyMath'
-			with: [ spec repository: 'github://PolyMathOrg/PolyMath:master/src' ].
+			with: [ spec repository: 'github://PolyMathOrg/PolyMath:v1.0.3' ].
 			
 		"Packages"
 		spec 
