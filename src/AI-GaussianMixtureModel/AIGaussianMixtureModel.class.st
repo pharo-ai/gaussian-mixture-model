@@ -118,6 +118,7 @@ AIGaussianMixtureModel >> initialize [
 
 { #category : #accessing }
 AIGaussianMixtureModel >> initializeParametersFor: aCollectionOfVectors [
+
 	gaussians := initializationStrategy
 		initializeGaussiansFor: aCollectionOfVectors
 		numberOfGaussians: numberOfGaussians.
