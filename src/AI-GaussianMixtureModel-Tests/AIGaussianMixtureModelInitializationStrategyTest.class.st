@@ -34,14 +34,10 @@ AIGaussianMixtureModelInitializationStrategyTest >> strategy [
 AIGaussianMixtureModelInitializationStrategyTest >> testInitializeCovarianceMatrices [
 
 	| expected |
-	expected := { 
-		            (PMSymmetricMatrix new initializeIdentity: 2).
-		            (PMSymmetricMatrix new initializeIdentity: 2) }.
+	expected := { (PMSymmetricMatrix new initializeIdentity: 2). (PMSymmetricMatrix new initializeIdentity: 2) }.
 
 	self
-		assertCollection: (model
-				 initializeCovarianceMatricesFor: data
-				 numberOfGaussians: 2)
+		assertCollection: (model initializeCovarianceMatricesFor: data numberOfGaussians: 2)
 		equals: expected
 ]
 
@@ -49,7 +45,6 @@ AIGaussianMixtureModelInitializationStrategyTest >> testInitializeCovarianceMatr
 AIGaussianMixtureModelInitializationStrategyTest >> testInitializeMixingCoefficients [
 
 	self
-		assertCollection:
-		(model initializeMixingCoefficientsFor: data numberOfGaussians: 2)
-		equals: { 1 / 2 .1 / 2 }
+		assertCollection: (model initializeMixingCoefficientsFor: data numberOfGaussians: 2)
+		equals: { 1 / 2 . 1 / 2 }
 ]
