@@ -85,16 +85,14 @@ AIGaussianMixtureModel >> gaussians: anObject [
 
 { #category : #convergence }
 AIGaussianMixtureModel >> hasConverged [
-	logLikelihoodHistory size < 2
-		ifTrue: [ ^ false ].
-	
-	logLikelihoodHistory size >= 100 ifTrue: [
-		self inform: 'Maximum number of iterations was reached'.
-		^ true ].
-		
-	(logLikelihoodHistory last closeTo: logLikelihoodHistory nextToLast)
+
+	logLikelihoodHistory size < 2 ifTrue: [ ^ false ].
+
+	logLikelihoodHistory size >= 100 ifTrue: [ "max iterations" ^ true ].
+
+	(logLikelihoodHistory last closeTo: logLikelihoodHistory nextToLast) 
 		ifTrue: [ ^ true ].
-		
+
 	^ false
 ]
 
