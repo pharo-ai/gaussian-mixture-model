@@ -37,14 +37,18 @@ AIGaussianMixtureModel >> calculateLogLikelihoodFor: aCollectionOfVectors [
 ]
 
 { #category : #fitting }
-AIGaussianMixtureModel >> evaluateResponsibilitiesFor: aCollectionOfVectors [
-	| numerator denominator |
+AIGaussianMixtureModel >> calculateResponsibilitiesFor: aCollectionOfVectors [
+	| probability numerator denominator |
 
 	responsibilities := aCollectionOfVectors collect: [ :each |
 		(1 to: numberOfGaussians) collect: [ :k |
-			numerator := (mixingCoefficients at: k) * ((gaussians at: k) value: each).
+			probability := self probabilityOfVector: each beingGeneratedByDistributionAt: k.
+			
+			numerator := (mixingCoefficients at: k) * probability.
+			
 			denominator := ((1 to: numberOfGaussians) collect: [ :j |
-				(mixingCoefficients at: j) * ((gaussians at: j) value: each) ]) sum.
+				probability := self probabilityOfVector: each beingGeneratedByDistributionAt: j.
+				(mixingCoefficients at: j) * probability ]) sum.
 			
 			numerator / denominator ] ].
 ]
@@ -62,7 +66,7 @@ AIGaussianMixtureModel >> fit: aCollectionOfCollections [
 	
 	[ self hasConverged ] whileFalse: [
 		"Expectation (E step)"
-		self evaluateResponsibilitiesFor: collectionOfVectors.
+		self calculateResponsibilitiesFor: collectionOfVectors.
 		
 		"Maximization (M step)"
 		self updateParametersFor: collectionOfVectors.
@@ -174,6 +178,14 @@ AIGaussianMixtureModel >> numberOfGaussians [
 { #category : #accessing }
 AIGaussianMixtureModel >> numberOfGaussians: aNumber [
 	numberOfGaussians := aNumber
+]
+
+{ #category : #fitting }
+AIGaussianMixtureModel >> probabilityOfVector: aVector beingGeneratedByDistributionAt: anIndex [ 
+	
+	| distribution |
+	distribution := gaussians at: anIndex.
+	^ distribution value: aVector
 ]
 
 { #category : #accessing }
