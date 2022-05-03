@@ -12,8 +12,8 @@ BaselineOfAIGaussianMixtureModel >> baseline: spec [
 		spec
 			baseline: 'AIExternalDependencies'
 			with: [ spec
-				loads: #('PolyMathGroup');
-				repository: 'github://pharo-ai/external-dependencies' ].
+    				baseline: 'AIExternalPolyMath'
+				with: [ spec repository: 'github://pharo-ai/external-dependencies' ] ].
 			
 		"Packages"
 		spec 
