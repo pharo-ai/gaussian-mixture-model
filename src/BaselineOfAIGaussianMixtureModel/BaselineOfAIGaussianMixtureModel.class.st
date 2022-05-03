@@ -15,6 +15,6 @@ BaselineOfAIGaussianMixtureModel >> baseline: spec [
 			
 		"Packages"
 		spec 
-			package: 'AI-GaussianMixtureModel' with: [ spec requires: 'AIExternalDependencies' ];
+			package: 'AI-GaussianMixtureModel' with: [ spec requires: 'AIExternalPolyMath' ];
 			package: 'AI-GaussianMixtureModel-Tests' with: [ spec requires: #('AI-GaussianMixtureModel') ] ].
 ]
