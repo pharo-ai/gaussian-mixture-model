@@ -7,14 +7,16 @@ Class {
 		'gaussians',
 		'mixingCoefficients',
 		'responsibilities',
-		'logLikelihoodHistory'
+		'logLikelihoodHistory',
+		'maxIterations'
 	],
 	#category : #'AI-GaussianMixtureModel'
 }
 
-{ #category : #'class initialization' }
-AIGaussianMixtureModel class >> defaultNumberOfGaussians [
-	^ 2
+{ #category : #'accesing - defaults' }
+AIGaussianMixtureModel class >> defaultMaxIterations [
+
+	^ 100
 ]
 
 { #category : #accessing }
@@ -27,6 +29,7 @@ AIGaussianMixtureModel class >> numberOfGaussians: aNumber [
 
 { #category : #convergence }
 AIGaussianMixtureModel >> calculateLogLikelihoodFor: aCollectionOfVectors [
+
 	| logLikelihood |
 	
 	logLikelihood := (aCollectionOfVectors collect: [ :each | 
@@ -40,7 +43,7 @@ AIGaussianMixtureModel >> calculateLogLikelihoodFor: aCollectionOfVectors [
 AIGaussianMixtureModel >> calculateResponsibilitiesFor: aCollectionOfVectors [
 	| probability numerator denominator |
 
-	responsibilities := aCollectionOfVectors collect: [ :each |
+	^ aCollectionOfVectors collect: [ :each |
 		(1 to: numberOfGaussians) collect: [ :k |
 			probability := self probabilityOfVector: each beingGeneratedByDistributionAt: k.
 			
@@ -54,25 +57,25 @@ AIGaussianMixtureModel >> calculateResponsibilitiesFor: aCollectionOfVectors [
 ]
 
 { #category : #fitting }
-AIGaussianMixtureModel >> fit: aCollectionOfCollections [
-	"Fits the given number of multivariate norml distributions (defined by the numberOfGaussians) to the data which can be a collection of collections or a DataFrame"
-	
+AIGaussianMixtureModel >> fitX: aCollectionOfCollections [
+
+	"Fits the given number of multivariate norml distributions (defined by the numberOfGaussians)"
+
 	| collectionOfVectors |
-	
-	collectionOfVectors := OrderedCollection withAll: (aCollectionOfCollections
-		collect: [ :each | each asPMVector ]).
-	
+	collectionOfVectors := OrderedCollection withAll:
+		(aCollectionOfCollections collect: [ :each | each asPMVector ]).
+
 	self initializeParametersFor: collectionOfVectors.
-	
+
 	[ self hasConverged ] whileFalse: [
 		"Expectation (E step)"
-		self calculateResponsibilitiesFor: collectionOfVectors.
-		
+		responsibilities := self calculateResponsibilitiesFor: collectionOfVectors.
+
 		"Maximization (M step)"
 		self updateParametersFor: collectionOfVectors.
-		
+
 		"Evaluation"
-		self calculateLogLikelihoodFor: collectionOfVectors ].
+		self calculateLogLikelihoodFor: collectionOfVectors ]
 ]
 
 { #category : #accessing }
@@ -92,10 +95,9 @@ AIGaussianMixtureModel >> hasConverged [
 
 	logLikelihoodHistory size < 2 ifTrue: [ ^ false ].
 
-	logLikelihoodHistory size >= 100 ifTrue: [ "max iterations" ^ true ].
+	logLikelihoodHistory size > maxIterations ifTrue: [ ^ true ].
 
-	(logLikelihoodHistory last closeTo: logLikelihoodHistory nextToLast) 
-		ifTrue: [ ^ true ].
+	(logLikelihoodHistory last closeTo: logLikelihoodHistory nextToLast) ifTrue: [ ^ true ].
 
 	^ false
 ]
@@ -112,12 +114,13 @@ AIGaussianMixtureModel >> initializationStrategy: anObject [
 
 { #category : #initialization }
 AIGaussianMixtureModel >> initialize [
+
 	super initialize.
-	
-	numberOfGaussians := self class defaultNumberOfGaussians.
+
 	self useRandomInitializationStrategy.
-	
+
 	logLikelihoodHistory := OrderedCollection new.
+	maxIterations := self class defaultMaxIterations
 ]
 
 { #category : #accessing }
@@ -134,8 +137,8 @@ AIGaussianMixtureModel >> initializeParametersFor: aCollectionOfVectors [
 
 { #category : #classification }
 AIGaussianMixtureModel >> labels [
-	^ responsibilities collect: [ :each |
-		each indexOf: each max ]
+
+	^ responsibilities collect: [ :each | each indexOf: each max ]
 ]
 
 { #category : #accessing }
@@ -153,21 +156,15 @@ AIGaussianMixtureModel >> logLikelihoodHistory [
 ]
 
 { #category : #accessing }
-AIGaussianMixtureModel >> logLikelihoodHistory: anObject [
+AIGaussianMixtureModel >> maxIterations: aPositiveNumber [
 
-	logLikelihoodHistory := anObject
+	maxIterations := aPositiveNumber
 ]
 
 { #category : #accessing }
 AIGaussianMixtureModel >> mixingCoefficients [
 
 	^ mixingCoefficients
-]
-
-{ #category : #accessing }
-AIGaussianMixtureModel >> mixingCoefficients: anObject [
-
-	mixingCoefficients := anObject
 ]
 
 { #category : #accessing }
@@ -180,9 +177,17 @@ AIGaussianMixtureModel >> numberOfGaussians: aNumber [
 	numberOfGaussians := aNumber
 ]
 
+{ #category : #classification }
+AIGaussianMixtureModel >> predict: aCollectionOfVectors [
+
+	| newResponsibilites |
+	newResponsibilites := self calculateResponsibilitiesFor: aCollectionOfVectors.
+	^ newResponsibilites collect: [ :each | each indexOf: each max ]
+]
+
 { #category : #fitting }
-AIGaussianMixtureModel >> probabilityOfVector: aVector beingGeneratedByDistributionAt: anIndex [ 
-	
+AIGaussianMixtureModel >> probabilityOfVector: aVector beingGeneratedByDistributionAt: anIndex [
+
 	| distribution |
 	distribution := gaussians at: anIndex.
 	^ distribution value: aVector
@@ -200,20 +205,9 @@ AIGaussianMixtureModel >> randomSeed: aNumber [
 	initializationStrategy randomSeed: aNumber
 ]
 
-{ #category : #accessing }
-AIGaussianMixtureModel >> responsibilities [
-
-	^ responsibilities
-]
-
-{ #category : #accessing }
-AIGaussianMixtureModel >> responsibilities: anObject [
-
-	responsibilities := anObject
-]
-
 { #category : #fitting }
 AIGaussianMixtureModel >> updateParametersFor: aCollectionOfVectors [
+
 	| n mu deviation sigma |
 	
 	1 to: numberOfGaussians do: [ :k | 
@@ -232,10 +226,12 @@ AIGaussianMixtureModel >> updateParametersFor: aCollectionOfVectors [
 
 { #category : #'initialization strategy' }
 AIGaussianMixtureModel >> useKMeansInitializationStrategy [
-	initializationStrategy := AIGaussianMixtureModelKMeansInitializationStrategy new.
+
+	initializationStrategy := AIGaussianMixtureModelKMeansInitializationStrategy new
 ]
 
 { #category : #'initialization strategy' }
 AIGaussianMixtureModel >> useRandomInitializationStrategy [
-	initializationStrategy := AIGaussianMixtureModelRandomInitializationStrategy new.
+
+	initializationStrategy := AIGaussianMixtureModelRandomInitializationStrategy new
 ]

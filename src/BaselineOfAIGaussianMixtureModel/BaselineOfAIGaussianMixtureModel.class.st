@@ -1,3 +1,6 @@
+"
+I am a baseline
+"
 Class {
 	#name : #BaselineOfAIGaussianMixtureModel,
 	#superclass : #BaselineOf,

@@ -6,6 +6,7 @@ Class {
 
 { #category : #initialization }
 AIGaussianMixtureModelRandomInitializationStrategy >> initializeMeanVectorsFor: aCollectionOfCollections numberOfGaussians: aNumber [
+
 	| power columns random |
 	
 	power := aCollectionOfCollections anyOne size.

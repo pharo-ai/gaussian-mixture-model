@@ -15,8 +15,7 @@ AIGaussianMixtureModelInitializationStrategy >> initializeCovarianceMatricesFor:
 	| power |
 	power := aCollectionOfCollections anyOne size.
 
-	^ (1 to: aNumber) collect: [ :k |
-		  PMSymmetricMatrix identity: power ]
+	^ (1 to: aNumber) collect: [ :k | PMSymmetricMatrix identity: power ]
 ]
 
 { #category : #initialization }
@@ -34,11 +33,13 @@ AIGaussianMixtureModelInitializationStrategy >> initializeGaussiansFor: aCollect
 
 { #category : #initialization }
 AIGaussianMixtureModelInitializationStrategy >> initializeMeanVectorsFor: aCollectionOfCollections numberOfGaussians: aNumber [
+
 	self subclassResponsibility
 ]
 
 { #category : #initialization }
 AIGaussianMixtureModelInitializationStrategy >> initializeMixingCoefficientsFor: aCollectionOfCollections numberOfGaussians: aNumber [
+
 	^ (1 to: aNumber) collect: [ :k | 1 / aNumber ]
 ]
 
