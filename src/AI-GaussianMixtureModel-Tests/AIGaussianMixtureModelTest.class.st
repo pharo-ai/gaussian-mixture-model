@@ -33,8 +33,8 @@ AIGaussianMixtureModelTest >> testLabels [
 	model fitX: #( #( 1 2 ) #( 1 4 ) #( 1 0 ) #( 10 2 ) #( 10 4 ) #( 10 0 ) ).
 
 	self
-		assert: model labels
-		equals: #( 1 1 1 0 0 0 )
+		assertCollection: model labels
+		includesAll: #( 1 1 1 0 0 0 )
 ]
 
 { #category : #tests }
@@ -43,7 +43,9 @@ AIGaussianMixtureModelTest >> testPredictNewData [
 	model numberOfGaussians: 2.
 	model fitX: #( #( 1 2 ) #( 1 4 ) #( 1 0 ) #( 10 2 ) #( 10 4 ) #( 10 0 ) ).
 
-	self assert: (model predict: #( #( 0 0 ) #( 12 3 ) )) equals: #( 1 0 )
+	self
+		assertCollection: (model predict: #( #( 0 0 ) #( 12 3 ) ))
+		includesAll: #( 1 0 )
 ]
 
 { #category : #tests }
@@ -53,8 +55,8 @@ AIGaussianMixtureModelTest >> testPredictSameFittingData [
 	model fitX: #( #( 1 2 ) #( 1 4 ) #( 1 0 ) #( 10 2 ) #( 10 4 ) #( 10 0 ) ).
 
 	self
-		assert: (model predict: #( #( 1 2 ) #( 1 4 ) #( 1 0 ) #( 10 2 ) #( 10 4 ) #( 10 0 ) ))
-		equals: #( 1 1 1 0 0 0 )
+		assertCollection: (model predict: #( #( 1 2 ) #( 1 4 ) #( 1 0 ) #( 10 2 ) #( 10 4 ) #( 10 0 ) ))
+		includesAll: #( 1 1 1 0 0 0 )
 ]
 
 { #category : #tests }

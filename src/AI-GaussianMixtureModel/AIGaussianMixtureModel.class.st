@@ -45,6 +45,7 @@ AIGaussianMixtureModel >> calculateResponsibilitiesFor: aCollectionOfVectors [
 
 	^ aCollectionOfVectors collect: [ :each |
 		(1 to: numberOfGaussians) collect: [ :k |
+			
 			probability := self probabilityOfVector: each beingGeneratedByDistributionAt: k.
 			
 			numerator := (mixingCoefficients at: k) * probability.
@@ -58,8 +59,6 @@ AIGaussianMixtureModel >> calculateResponsibilitiesFor: aCollectionOfVectors [
 
 { #category : #fitting }
 AIGaussianMixtureModel >> fitX: aCollectionOfCollections [
-
-	"Fits the given number of multivariate norml distributions (defined by the numberOfGaussians)"
 
 	| collectionOfVectors |
 	collectionOfVectors := OrderedCollection withAll:
@@ -123,7 +122,7 @@ AIGaussianMixtureModel >> initialize [
 	maxIterations := self class defaultMaxIterations
 ]
 
-{ #category : #accessing }
+{ #category : #fitting }
 AIGaussianMixtureModel >> initializeParametersFor: aCollectionOfVectors [
 
 	gaussians := initializationStrategy
@@ -178,9 +177,12 @@ AIGaussianMixtureModel >> numberOfGaussians: aNumber [
 ]
 
 { #category : #classification }
-AIGaussianMixtureModel >> predict: aCollectionOfVectors [
+AIGaussianMixtureModel >> predict: aCollectionOfCollections [
 
-	| newResponsibilites |
+	| newResponsibilites aCollectionOfVectors|
+	aCollectionOfVectors := OrderedCollection withAll:
+		(aCollectionOfCollections collect: [ :each | each asPMVector ]).
+		
 	newResponsibilites := self calculateResponsibilitiesFor: aCollectionOfVectors.
 	^ newResponsibilites collect: [ :each | each indexOf: each max ]
 ]
